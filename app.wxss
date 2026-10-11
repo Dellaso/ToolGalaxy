@@ -1,0 +1,11 @@
+/* 全局样式 */
+page {
+  background: #050714;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  overflow: hidden;
+}
+
+view, text {
+  box-sizing: border-box;
+}

@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#050714",
+    "navigationBarTitleText": "太阳系倒计时",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#050714"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

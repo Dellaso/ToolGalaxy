@@ -1,0 +1,112 @@
+<view class="page">
+  <view class="solar-system">
+    <!-- 星空背景 -->
+    <view class="stars">
+      <view
+        wx:for="{{stars}}"
+        wx:key="index"
+        class="star {{item.twinkle ? 'twinkle' : ''}}"
+        style="left:{{item.x}}rpx;top:{{item.y}}rpx;width:{{item.size}}rpx;height:{{item.size}}rpx;opacity:{{item.opacity}};animation-delay:{{item.delay}}s"
+      ></view>
+    </view>
+
+    <!-- CSS 椭圆底环（始终可见） -->
+    <view
+      wx:for="{{planets}}"
+      wx:key="key"
+      class="orbit-ring"
+      style="width:{{item.rx * 2}}rpx;height:{{item.ry * 2}}rpx;margin-left:-{{item.rx}}rpx;margin-top:-{{item.ry}}rpx"
+    ></view>
+
+    <!-- 右上角音效开关 -->
+    <view class="sound-btn {{soundOn ? 'on' : 'off'}}" catchtap="onSoundToggle">
+      <view class="speaker">
+        <view class="speaker-box"></view>
+        <view class="speaker-cone"></view>
+      </view>
+      <view wx:if="{{soundOn}}" class="wave wave-a"></view>
+      <view wx:if="{{soundOn}}" class="wave wave-b"></view>
+      <view wx:else class="mute-bar"></view>
+    </view>
+
+    <!-- 太阳（开始→暂停→清零） -->
+    <view class="sun-wrapper">
+      <view class="sun-corona sun-{{sunState}}"></view>
+      <view class="sun-glow sun-{{sunState}}"></view>
+      <view class="sun-body sun-{{sunState}}">
+        <text class="sun-time-on-sun">{{sunTimeText}}</text>
+      </view>
+      <view class="sun-tap" catchtap="onSunTap"></view>
+      <text class="sun-hint-below sun-{{sunState}}">{{sunHintText}}</text>
+    </view>
+
+    <!-- 行星（单击：开始 → 暂停 → 重置） -->
+    <block wx:for="{{planets}}" wx:key="key">
+      <!-- 已走过轨道：纯 CSS 半圆裁剪进度弧（运行/暂停/刚完成时显示） -->
+      <view
+        wx:if="{{item.state !== 'ready' || item.completed}}"
+        class="arc-ring"
+        style="width:{{item.rx * 2}}rpx;height:{{item.rx * 2}}rpx;margin-left:-{{item.rx}}rpx;margin-top:-{{item.rx}}rpx;transform:scaleY({{item.scaleK}}) rotate({{item.offsetDeg}}deg)"
+      >
+        <view class="arc-half arc-right">
+          <view class="arc-semi" style="transform:rotate({{item.deg1}}deg)"></view>
+        </view>
+        <view class="arc-half arc-left">
+          <view class="arc-semi" style="transform:rotate({{item.deg2}}deg)"></view>
+        </view>
+      </view>
+
+      <view class="orbit-point">
+        <view
+          class="planet-hit"
+          style="left:{{item.x}}rpx;top:{{item.y}}rpx"
+          data-index="{{index}}"
+          catchtap="onPlanetTap"
+        >
+          <view
+            class="planet planet-{{item.key}} state-{{item.state}} {{item.completed ? 'just-completed' : ''}}"
+            style="width:{{item.size}}rpx;height:{{item.size}}rpx"
+          ></view>
+          <view wx:if="{{item.key === 'saturn' && item.state !== 'done'}}" class="saturn-ring"></view>
+          <view class="planet-trail {{item.state === 'running' ? 'show' : ''}}"></view>
+
+          <!-- 爆炸覆盖层：闪光 + 冲击波 + 火星四溅（一次性动画），之后行星持续燃烧 -->
+          <view wx:if="{{item.state === 'done'}}" class="boom-layer">
+            <view class="boom-flash"></view>
+            <view class="boom-ring boom-ring-1"></view>
+            <view class="boom-ring boom-ring-2"></view>
+            <view
+              class="boom-spark"
+              wx:for="{{[0,45,90,135,180,225,270,315]}}"
+              wx:for-item="deg"
+              wx:key="*this"
+              style="transform:rotate({{deg}}deg)"
+            >
+              <view class="spark-dot"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 底部状态面板 -->
+  <view class="status-panel">
+    <view class="status-hint">单击行星：开始 · 暂停 · 重置</view>
+    <view class="status-grid">
+      <view
+        wx:for="{{planets}}"
+        wx:key="key"
+        class="status-item st-{{item.state}} {{item.completed ? 'completed' : ''}}"
+        data-index="{{index}}"
+        bindtap="onStatusTap"
+      >
+        <view class="status-dot planet-{{item.key}}"></view>
+        <view class="status-text">
+          <text class="status-name">{{item.name}}</text>
+          <text class="status-time">{{item.displayText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
